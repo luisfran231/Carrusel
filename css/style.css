@@ -1,0 +1,100 @@
+html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background-color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: white;
+}
+
+/* Contenedor principal de la aplicación con Flexbox */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* Visor principal que ocupa el espacio restante */
+#main-viewer {
+    flex-grow: 1;
+    position: relative; /* Contexto para elementos absolutos */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main-canvas {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    cursor: grab;
+}
+#main-canvas:active { cursor: grabbing; }
+
+/* Encabezado con el selector */
+#main-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+}
+
+#section-selector {
+    font-size: 1em; padding: 10px 15px;
+    background-color: rgba(0,0,0,0.6); color: white;
+    border: 1px solid #888; border-radius: 8px;
+}
+
+/* Flechas de navegación */
+.viewer-controls {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 10;
+}
+
+.viewer-controls button {
+    pointer-events: all; background-color: rgba(0,0,0,0.4);
+    color: white; border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50%; width: 60px; height: 60px;
+    font-size: 2.5em; line-height: 55px; cursor: pointer;
+    position: absolute; user-select: none; text-shadow: 0 0 5px black;
+    transition: all 0.3s;
+}
+
+#prev-image {
+    left: 30px;
+    bottom: 30px; /* Posición correcta dentro del nuevo contenedor */
+}
+
+#next-image {
+    transform: translate(-50%, -50%);
+    transition: left 0.5s ease-in-out, top 0.5s ease-in-out, background-color 0.3s, transform 0.2s;
+}
+
+.viewer-controls button:hover { background-color: rgba(0,0,0,0.7); }
+#prev-image:hover { transform: scale(1.1); }
+#next-image:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+/* Línea de tiempo */
+#timeline-container {
+    flex-shrink: 0; /* Evita que se encoja */
+    height: 140px;
+    background-color: #222;
+    border-top: 1px solid #444; padding: 10px 0;
+    display: flex; align-items: center; cursor: grab;
+    overflow-x: scroll; z-index: 20;
+}
+
+#timeline-container:active { cursor: grabbing; }
+#timeline-container::-webkit-scrollbar { display: none; }
+#timeline-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+#timeline-scrubber { display: flex; flex-direction: row; align-items: center; padding: 0 20px; }
+
+.thumbnail {
+    flex-shrink: 0; width: 160px; height: 90px; margin: 0 8px;
+    background-size: cover; background-position: center;
+    border: 3px solid transparent; border-radius: 5px;
+    cursor: pointer; transition: all 0.3s; opacity: 0.6;
+}
+
+.thumbnail:hover { transform: scale(1.05); opacity: 1; }
+.thumbnail.active { border-color: #e0a96d; transform: scale(1.1); opacity: 1; }

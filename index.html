@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museo Interactivo Definitivo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- Contenedor para el visor principal y sus elementos superpuestos -->
+        <div id="main-viewer">
+            <canvas id="main-canvas"></canvas>
+
+            <header id="main-header">
+                <select id="section-selector"></select>
+            </header>
+
+            <div class="viewer-controls">
+                <button id="prev-image" title="Anterior">‹</button>
+                <button id="next-image" title="Siguiente">›</button>
+            </div>
+        </div>
+
+        <!-- La línea de tiempo ahora es un bloque separado -->
+        <div id="timeline-container">
+            <div id="timeline-scrubber"></div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>
