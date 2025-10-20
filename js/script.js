@@ -9,13 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         heroes: {
             name: "Héroes",
-            path: "assets/heroes/",
-            images: ['heroe_1.jpg', 'heroe_2.jpg']
         },
         historia: {
             name: "Historia",
-            path: "assets/historia/",
-            images: ['evento_1.jpg', 'evento_2.jpg', 'evento_3.jpg']
         }
     };
 
@@ -31,9 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineScrubber = document.getElementById('timeline-scrubber');
     const prevButton = document.getElementById('prev-image');
     const nextButton = document.getElementById('next-image');
+    const mainViewer = document.getElementById('main-viewer');
+    const timelineContainer = document.getElementById('timeline-container');
+    const heroesContent = document.getElementById('heroes-content');
+    const historiaContent = document.getElementById('historia-content');
 
     // --- ESTADO DE LA APLICACIÓN ---
-    let currentState = { section: 'museo', index: 0 };
+    let currentState = { section: 'museo', index: 0, contentIndex: 0 };
     let images = [];
     let transform = { x: 0, y: 0, zoom: 1 };
     let isDragging = false, isTransitioning = false;
@@ -47,33 +47,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateContentItemVisibility(contentWrapper) {
+        const items = contentWrapper.querySelectorAll('.content-item');
+        const prevBtn = contentWrapper.querySelector('.prev-item-btn');
+        const nextBtn = contentWrapper.querySelector('.next-item-btn');
+
+        items.forEach((item, idx) => {
+            item.classList.toggle('hidden', idx !== currentState.contentIndex);
+        });
+
+        prevBtn.disabled = currentState.contentIndex === 0;
+        nextBtn.disabled = currentState.contentIndex >= items.length - 1;
+    }
+
     function loadSection(sectionId) {
-        currentState = { section: sectionId, index: 0 };
-        transform = { x: 0, y: 0, zoom: 1 };
-        images = [];
-        timelineScrubber.innerHTML = '';
+        currentState.section = sectionId;
 
-        // Muestra u oculta la flecha dinámica
-        nextButton.style.transition = (sectionId === 'museo') ? 'left 0.5s ease-in-out, top 0.5s ease-in-out' : 'none';
-        nextButton.style.display = (sectionId === 'museo') ? 'block' : 'none';
+        const contentSections = [heroesContent, historiaContent];
+        const viewerSections = [mainViewer, timelineContainer];
+        
+        viewerSections.forEach(el => el.classList.add('hidden'));
+        contentSections.forEach(el => el.classList.add('hidden'));
 
-        const section = sections[sectionId];
-        const imagePromises = section.images.map((imgName, index) => new Promise(resolve => {
-            const img = new Image();
-            img.src = section.path + imgName;
-            img.onload = () => {
-                images[index] = img;
-                const thumb = document.createElement('div');
-                thumb.className = 'thumbnail';
-                thumb.style.backgroundImage = `url(${img.src})`;
-                thumb.dataset.index = index;
-                timelineScrubber.appendChild(thumb);
-                thumb.addEventListener('click', () => changeImage(index));
-                resolve();
-            };
-        }));
+        if (sectionId === 'museo') {
+            viewerSections.forEach(el => el.classList.remove('hidden'));
+            
+            currentState.index = 0;
+            transform = { x: 0, y: 0, zoom: 1 };
+            images = [];
+            timelineScrubber.innerHTML = '';
 
-        Promise.all(imagePromises).then(() => changeImage(0, false));
+            nextButton.style.transition = 'left 0.5s ease-in-out, top 0.5s ease-in-out';
+            nextButton.style.display = 'block';
+
+            const section = sections[sectionId];
+            const imagePromises = section.images.map((imgName, index) => new Promise(resolve => {
+                const img = new Image();
+                img.src = section.path + imgName;
+                img.onload = () => {
+                    images[index] = img;
+                    const thumb = document.createElement('div');
+                    thumb.className = 'thumbnail';
+                    thumb.style.backgroundImage = `url(${img.src})`;
+                    thumb.dataset.index = index;
+                    timelineScrubber.appendChild(thumb);
+                    thumb.addEventListener('click', () => changeImage(index));
+                    resolve();
+                };
+            }));
+
+            Promise.all(imagePromises).then(() => changeImage(0, false));
+
+        } else if (sectionId === 'heroes' || sectionId === 'historia') {
+            const contentWrapper = sectionId === 'heroes' ? heroesContent : historiaContent;
+            contentWrapper.classList.remove('hidden');
+            currentState.contentIndex = 0;
+            updateContentItemVisibility(contentWrapper);
+        }
     }
 
     function changeImage(index, withTransition = true) {
@@ -128,12 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         nextButton.style.left = `${x}%`;
         nextButton.style.top = `${y}%`;
     }
-
-    function render() { /* ... (sin cambios) ... */ }
-    function renderImage(img) { /* ... (sin cambios) ... */ }
-    function getTransformedRect(img) { /* ... (sin cambios) ... */ }
-
-    // --- RENDERIZADO Y EVENTOS (la mayoría sin cambios) ---
     
     function render() {
         if (isTransitioning) return;
@@ -156,15 +180,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return { x: transform.x + (canvas.width - w) / 2, y: transform.y + (canvas.height - h) / 2, width: w, height: h };
     }
 
+    // --- EVENTOS ---
     selector.addEventListener('change', (e) => loadSection(e.target.value));
+    
     prevButton.addEventListener('click', () => changeImage((currentState.index - 1 + images.length) % images.length));
-    nextButton.addEventListener('click', () => {
-        if (currentState.section !== 'museo') {
-            changeImage((currentState.index + 1) % images.length);
-        } else {
-            // La lógica de la flecha dinámica ya está en changeImage
-            changeImage((currentState.index + 1) % images.length);
-        }
+    nextButton.addEventListener('click', () => changeImage((currentState.index + 1) % images.length));
+
+    [heroesContent, historiaContent].forEach(container => {
+        const prevBtn = container.querySelector('.prev-item-btn');
+        const nextBtn = container.querySelector('.next-item-btn');
+
+        prevBtn.addEventListener('click', () => {
+            if (currentState.contentIndex > 0) {
+                currentState.contentIndex--;
+                updateContentItemVisibility(container);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const items = container.querySelectorAll('.content-item');
+            if (currentState.contentIndex < items.length - 1) {
+                currentState.contentIndex++;
+                updateContentItemVisibility(container);
+            }
+        });
     });
 
     canvas.addEventListener('wheel', e => {

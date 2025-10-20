@@ -35,7 +35,7 @@ html, body {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 20;
+    z-index: 40; /* Aumentado para que esté sobre las secciones de contenido */
 }
 
 #section-selector {
@@ -98,3 +98,106 @@ html, body {
 
 .thumbnail:hover { transform: scale(1.05); opacity: 1; }
 .thumbnail.active { border-color: #e0a96d; transform: scale(1.1); opacity: 1; }
+
+/* --- Estilos para Secciones de Contenido (Héroes, Historia) --- */
+
+.hidden {
+    display: none !important;
+}
+
+.content-section {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 30; /* Por encima del visor principal */
+    padding: 120px 8% 120px; /* Más espacio vertical y horizontal */
+    box-sizing: border-box;
+    display: flex; /* Usar flex para alinear el item */
+    align-items: center;
+    justify-content: center;
+}
+
+.content-item {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center; /* Alinea verticalmente imagen y texto */
+    gap: 50px; /* Aumenta el espacio */
+    width: 100%;
+    height: 100%;
+    max-width: 1400px; /* Un ancho máximo para pantallas grandes */
+}
+
+.text-content {
+    flex: 1; /* Ocupa el espacio disponible */
+    color: #eee;
+    height: 100%; /* Ocupa toda la altura disponible */
+    overflow-y: auto; /* Scroll SÓLO en el texto si es necesario */
+    padding-right: 20px; /* Espacio para la barra de scroll */
+}
+
+.text-content h2 {
+    font-size: 2.8rem; /* Un poco más grande */
+    color: #e0a96d;
+    margin-bottom: 1.5rem;
+    position: sticky; /* Título fijo al hacer scroll */
+    top: 0;
+    background: rgba(0,0,0,0.9);
+    padding-bottom: 10px;
+}
+
+.text-content p {
+    font-size: 1.2rem;
+    line-height: 1.7; /* Más interlineado para facilitar la lectura */
+}
+
+.image-content {
+    flex-basis: 45%; /* Un poco más de espacio para la imagen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.image-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Asegura que la imagen se vea completa */
+    border-radius: 10px; /* Bordes redondeados por defecto */
+}
+
+/* Estilos específicos para las imágenes de Héroes */
+#heroes-content .image-content img {
+    border-radius: 50%; /* Forma de óvalo/círculo */
+    box-shadow: 0 0 35px 15px rgba(255, 223, 186, 0.2); /* Desvanecimiento leve */
+    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    mask-image: radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+}
+
+/* Navegación para Héroes e Historia */
+.content-nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40; /* Por encima del contenido */
+    display: flex;
+    gap: 20px;
+}
+
+.content-nav button {
+    background-color: rgba(0,0,0,0.4);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 2.5em;
+    line-height: 55px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.content-nav button:hover {
+    background-color: rgba(0,0,0,0.7);
+    transform: scale(1.1);
+}
